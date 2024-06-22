@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Processing Service</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap">
+</head>
+<body>
+    <h1>DeepFake Detection Pipeline</h1>
+    
+    <div id='demo' class="flex justify-center items-center mt-8 w-full bg-white py-12 lg:py-24">
+        <div class="container mx-auto my-8 px-4 lg:px-20" data-aos="zoom-in">
+            <div class="w-full bg-white p-8 my-4 md:px-12 lg:w-9/12 lg:pl-20 lg:pr-40 mr-auto rounded-2xl shadow-2xl">
+                
+                <form onSubmit="handleVideoSubmit(event)" id="videoForm" class="mb-8">
+                    <label for="videoId" class="block mb-2">Enter Video ID:</label>
+                    <input type="text" id="videoId" name="videoId" class="w-full bg-gray-100 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline" required />
+                    <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Process Video</button>
+                </form>
+
+                <h2 class="font-bold text-2xl mb-4">Monitoring for New Uploads</h2>
+                <form onSubmit="handleChannelSubmit(event)" id="channelForm" class="mb-8">
+                    <label for="channelId" class="block mb-2">Enter Channel ID:</label>
+                    <input type="text" id="channelId" name="channelId" class="w-full bg-gray-100 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline" required />
+                    <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Start Monitoring</button>
+                </form>
+
+                <form onSubmit="handleStopMonitoringSubmit(event)" id="stopMonitoringForm" class="mb-8">
+                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Stop Monitoring</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        function handleVideoSubmit(event) {
+            event.preventDefault();
+            var videoId = document.getElementById("videoId").value;
+            fetch("/api/downandproc", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ "video_id": videoId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").textContent = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+
+        function handleChannelSubmit(event) {
+            event.preventDefault();
+            var channelId = document.getElementById("channelId").value;
+            fetch("/api/start_monitoring", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ "channel_id": channelId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").textContent = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+
+        function handleStopMonitoringSubmit(event) {
+            event.preventDefault();
+            fetch("/api/stop_monitoring", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").textContent = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+    </script>
+</body>
+</html>
